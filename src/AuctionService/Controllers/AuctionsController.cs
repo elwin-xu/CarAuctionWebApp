@@ -29,4 +29,16 @@ public class AunctionsController : ControllerBase
 
         return _mapper.Map<List<AuctionDto>>(auctions);
     }
+
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AuctionDto>> GetAuctionById(Guid id)
+    {
+        var auction = await _context.Auctions
+            .Include(x => x.Item)
+            .FirstOrDefaultAsync(x => x.Id == id);
+
+        if (auction == null) return NotFound();
+
+        return _mapper.Map<AuctionDto>(auction);
+    }
 }
