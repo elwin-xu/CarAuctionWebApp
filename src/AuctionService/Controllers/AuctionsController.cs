@@ -86,6 +86,8 @@ public class AunctionsController : ControllerBase
         auction.Item.Mileage = updateAuctionDto.Mileage ?? auction.Item.Mileage;
         auction.Item.Year = updateAuctionDto.Year ?? auction.Item.Year;
 
+        await _publishEndpoint.Publish(_mapper.Map<AuctionUpdated>(auction));
+
         var result = await _context.SaveChangesAsync() > 0;
 
         if (result) return Ok();
@@ -103,6 +105,8 @@ public class AunctionsController : ControllerBase
         // TODO: Check seller == username
 
         _context.Auctions.Remove(auction);
+
+        await _publishEndpoint.Publish<AuctionDeleted>(new {id = auction.Id.ToString()});
 
         var result = await _context.SaveChangesAsync() > 0;
 
